@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>RSim Control Interface</title>
+    <script src="jquery-1.11.0.min.js"></script>
+    <script src="rsim.js"></script>
+    <style>
+	  table { border-collapse: collapse; margin-bottom: 5px; }
+	  h1 { font-size: 18pt; }
+	  td, th { font-size: 10pt; }
+	  td, th { border: 1px solid gray; }
+	  th { background-color: #d0d0d0; }
+      div { margin-bottom: 30px; }
+	  span.info-channel { margin-right: 6px; background-color: #d0d0d0; }
+	</style>
+  </head>
+
+<body>
+	<h1>RSim Control Interface</h1>
+
+	<div id="status">
+		<table>
+			<tr><th colspan="2">RSim Status</th></tr>
+			<tr><td>Version:</td><td id="status-version"></td></tr>
+			<tr><td>Status:</td><td id="status-status"></td></tr>
+			<tr><td>Last update:</td><td id="status-last-update"></td></tr>
+		</table>
+	</div>
+
+	<div>
+		<table id="modules">
+			<tbody>
+			<tr><th colspan="2">Modules</th></tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div>
+		<button id="update">Update</button>
+		<button id="realtime">Realtime</button>
+	</div>
+
+
+</body>
+
+</html>
