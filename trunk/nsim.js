@@ -99,12 +99,47 @@ function queryInfoChannel(module, channel)
         type: 'POST',
         success: processInfoChannel
     });
-
 }
 
 function processInfoChannel(json)
 {
-    console.log('processing info channel');
+    id = 'channel-' + json.module + '-' + json.channel; 
+    console.log('processing info channel' + id);
+
+    channelsDiv = document.getElementById('info-channels');
+
+    // create channel div if doesn't exist
+    channelDiv = document.getElementById(id);
+    if (!channelDiv)
+    {
+        channelDiv = document.createElement('div');
+        channelDiv.id = id;
+        channelDiv.className = 'info-channel';
+        channelsDiv.appendChild(channelDiv);
+    }
+
+    // remove previous content
+    while (channelDiv.firstChild) { channelDiv.removeChild(channelDiv.firstChild); }
+
+    // create title
+    channelTitleDiv = document.createElement('div');
+    channelTitleDiv.className = 'channel-title';
+    channelTitleDiv.appendChild(document.createTextNode('Info channel: ' + json.channel));
+    channelDiv.appendChild(channelTitleDiv);
+
+    // loop through channel data array and create html output
+    channelData = json.data;
+    if (channelData instanceof Array)
+    {
+        for (i = 0; i < channelData.length; i++)
+        {
+            line = document.createElement('div');
+            line.className = 'line';
+            line.appendChild(document.createTextNode(channelData[i]));
+            channelDiv.appendChild(line);
+        }
+    }
+
 }
 
 function setRealtime()
