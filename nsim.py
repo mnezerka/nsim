@@ -47,11 +47,11 @@ class TraffikaHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.send_error(404, 'file not found')
             return
 
-        target = 'rsim.html' 
+        target = 'nsim.html' 
         if len(urlPathParts[1].strip()) > 0:
             target = urlPathParts[1].strip()
 
-        if target in ['rsim.html', 'jquery-1.11.0.min.js', 'rsim.js']:
+        if target in ['nsim.html', 'jquery-1.11.0.min.js', 'nsim.js']:
             # load index page
             f = open(os.path.join(os.curdir, target))
             self.send_response(200)
