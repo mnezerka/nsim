@@ -1,20 +1,22 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
-    <meta charset="UTF-8" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <title>RSim Control Interface</title>
-    <script src="jquery-1.11.0.min.js"></script>
-    <script src="nsim.js"></script>
-    <style>
+    <script type="text/javascript" src="jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="nsim.js"></script>
+    <style type="text/css">
+	  body { margin: 0px; padding: 0px; }
 	  table { border-collapse: collapse; margin-bottom: 5px; }
-	  h1 { font-size: 18pt; }
+	  h1 { font-size: 14pt; background-color: #999; margin-top: 0px; color: #fff; padding: 5px;}
+	  h2 { font-size: 10pt; background-color: #999; margin-top: 0px; color: #fff; padding: 1px;}
 	  td, th, div { font-size: 10pt; }
 	  td, th { border: 1px solid gray; }
 	  th { background-color: #d0d0d0; }
-      xxdiv { margin-bottom: 30px; }
+      div { margin: 5px;}
 	  span.info-channel { margin-right: 6px; background-color: #d0d0d0; }
-	  div#static { float: left; }
-	  div#dynamic { float: left; }
+	  div.col { float: left;}
 	  div.line { margin: 0px; padding: 1px;  }
 	  div.channel-title { margin: 0px; padding: 1px; font-weight: bold; }
 	  div.info-channel { border: none;  }
@@ -23,9 +25,10 @@
   </head>
 
 <body>
-	<h1>RSim Control Interface</h1>
+	<h1>NSim Control Interface</h1>
 
-	<div id="static">
+	<div class="col">
+		<h2>Basic information</h2>
 
 		<div id="status">
 			<table>
@@ -39,7 +42,7 @@
 		<div>
 			<table id="modules">
 				<tbody>
-				<tr><th colspan="2">Modules</th></tr>
+				<tr><th colspan="3">Modules</th></tr>
 				</tbody>
 			</table>
 		</div>
@@ -48,10 +51,19 @@
 			<button id="update">Update</button>
 			<button id="realtime">Realtime</button>
 		</div>
+
 	</div>
 
-	<div id="dynamic">
-		<div id="info-channels" />
+	<div class="col">
+		<h2>Info channels</h2>
+		<div id="info-channels"></div>
+	</div>
+
+	<div class="col">
+		<h2>Commands</h2>
+		<input id="cmd" type="text" />
+		<button id="runcmd">Run</button>
+		<div id="cmd-output" />
 	</div>
 
 </body>

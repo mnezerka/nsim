@@ -5,7 +5,8 @@ def initialize():
 	print "Dummpy module initialized"
 
 def getCommands():
-	commands = dict()
+	commands = []
+	commands.append({'name': 'sum', 'description': 'sum(int, int)'})
 	return commands;
 
 def getInfoChannels():
@@ -25,4 +26,8 @@ def getInfoChannel(name):
 	lines.append('system time: %f' % times[1]);
 
 	result  = { "data" : lines }
+	return result;
+
+def processCommand(cmd):
+	result = { "return": "ok", "result": 23333 }
 	return result;

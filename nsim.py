@@ -28,9 +28,16 @@ class TraffikaHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 infoChannels = mods[m].getInfoChannels()
             else:
                 infoChannels = []
+
+            if 'getCommands' in dir(mods[m]):
+                commands = mods[m].getCommands()
+            else:
+                commands = []
+
             jsonModules.append({
-                'name': mods[m].__name__,
-                'infochannels': infoChannels})
+                'name': m,
+                'infochannels': infoChannels,
+                'commands': commands})
 
         result = {"return" : "ok", "modules": jsonModules}
 
@@ -66,7 +73,7 @@ class TraffikaHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 contentLength = int(self.headers.getheader('content-length'))
                 postBody = self.rfile.read(contentLength)
                 data = json.loads(postBody)
-                result  = {"return" : "ok"}
+                result = {"return" : "ok"}
 
                 # get module
                 if 'module' in data:
@@ -76,10 +83,25 @@ class TraffikaHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
                 # process commands
                 if 'cmd' in data:
-                    if data['cmd'] == 'status':
-                        result = self.processCmdStatus() 
-                    if data['cmd'] == 'modules':
-                        result = self.processCmdModules() 
+
+                    # first - check if command is processed by some module 
+                    if module in mods:
+                        mod = mods[module]
+                        if 'processCommand' in dir(mod):
+                            result = mod.processCommand(data['cmd']) 
+                        else:
+                            result['return'] = 'error'
+                            result['description'] = 'module does not support command execution'
+                    # second - process command by nsim module
+                    else:
+                        if data['cmd'] == 'status':
+                            result = self.processCmdStatus() 
+                        elif data['cmd'] == 'modules':
+                            result = self.processCmdModules() 
+                        else:
+                            # unknown command
+                            result['return'] = 'error'
+                            result['description'] = 'unknown nsim command'
 
                 #process info channels
                 if 'channel' in data:
@@ -119,6 +141,7 @@ def run():
         moduleObj =__import__(moduleName)
         if 'initialize' in dir(moduleObj):
             moduleObj.initialize()
+            moduleName = moduleName.replace('module_', '');
             mods[moduleName] = moduleObj
 
     server_address = (HOST_NAME, PORT_NUMBER)
