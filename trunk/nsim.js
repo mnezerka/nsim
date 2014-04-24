@@ -42,8 +42,11 @@ function processModules(json) {
         var row = document.createElement('tr');
         var tdName = document.createElement('td');
         var tdInfoChannels = document.createElement('td');
+        var tdCommands = document.createElement('td');
         tdName.innerHTML = json.modules[i].name;
         row.appendChild(tdName)
+
+        // info channels
         var infoChannels = '';
         for (var ic = 0; ic < json.modules[i].infochannels.length; ic++)
         {
@@ -57,6 +60,17 @@ function processModules(json) {
             tdInfoChannels.appendChild(spanChannel);
         }
         row.appendChild(tdInfoChannels)
+
+        // commands
+        var commands = '';
+        for (var ic = 0; ic < json.modules[i].commands.length; ic++)
+        {
+            var spanCommand = document.createElement('span');
+            spanCommand.appendChild(document.createTextNode(json.modules[i].commands[ic].name));
+            tdCommands.appendChild(spanCommand);
+        }
+        row.appendChild(tdCommands)
+
         $('#modules').find('tbody').append(row);
     }
 }
@@ -160,10 +174,34 @@ function setRealtime()
     }
 }
 
-function setInfoChannel()
+function runCmd()
 {
-    console.log("info channel click");
-    $(this).css('background-color', 'red');
+    var cmdStr = $("#cmd").val();
+    var cmdParts = cmdStr.split(":");
+    if (cmdParts.length == 1)
+    {
+        cmdModule = "nsim";
+        cmd = cmdParts[0];
+    }
+    else
+    {
+        cmdModule = cmdParts[0];
+        cmd = cmdParts[1];
+    }
+         
+    $.ajax({
+        url: "http://localhost:9999/soap",
+        crossDomain: true,
+        data: JSON.stringify({ module: cmdModule, cmd: cmd}),
+        dataType: 'json',
+        type: 'POST',
+        success: processCmd
+    });
+}
+
+function processCmd(json)
+{
+    console.log("processing command");
 }
 
 $(document).ready(function() {
@@ -173,6 +211,8 @@ $(document).ready(function() {
     updateState();
     $('#realtime').on('click', setRealtime);
     $('#update').on('click', updateState);
+    $('#runcmd').on('click', runCmd);
+
 });
 
 
