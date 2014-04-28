@@ -177,7 +177,10 @@ function setRealtime()
 function runCmd()
 {
     var cmdStr = $("#cmd").val();
-    var cmdParts = cmdStr.split(":");
+    var cmdParams = cmdStr.split(" ");
+    var cmdPart = cmdParams[0]
+    cmdParams.shift();
+    var cmdParts = cmdPart.split(":");
     if (cmdParts.length == 1)
     {
         cmdModule = "nsim";
@@ -192,7 +195,7 @@ function runCmd()
     $.ajax({
         url: "http://localhost:9999/soap",
         crossDomain: true,
-        data: JSON.stringify({ module: cmdModule, cmd: cmd}),
+        data: JSON.stringify({ module: cmdModule, cmd: cmd, params: cmdParams}),
         dataType: 'json',
         type: 'POST',
         success: processCmd
