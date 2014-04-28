@@ -2,6 +2,10 @@
 
 package require Tcl 8.4
 package require json
+package require http
+
+set SERVER_IP "127.0.0.1"
+set SERVER_PORT 9999
 
 # data is plain old tcl values
 # spec is defined as follows:
@@ -62,13 +66,25 @@ proc compile_json {spec data} {
 
 #puts [json::json2dict $data]
 
-set sock [socket "www.seznam.cz" 80]
-puts $sock "GET /\n"
-flush $sock
 
-set page "" 
-while { [gets $sock line] >= 0 } {
-	append page $line
+proc httpPostRequest {data} \
+{
+	set url "http://$::SERVER_IP:$::SERVER_PORT/soap"
+	puts $url
+	set  token [http::geturl $url -query $data]
+	puts [http::meta $token]
+	puts [http::status $token]
+	puts [http::size $token]
+	set dataRaw [http::data $token]
+	return $dataRaw
 }
 
-puts $page
+dict set requestJson cmd status
+set requestRaw [compile_json dict $requestJson]
+
+set responseRaw [httpPostRequest $requestRaw]
+puts $responseRaw
+puts [json::json2dict $responseRaw]
+
+
+

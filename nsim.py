@@ -43,7 +43,6 @@ class TraffikaHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         return result
 
-
     def do_POST(self):
         self.do_GET()
 
@@ -88,7 +87,11 @@ class TraffikaHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                     if module in mods:
                         mod = mods[module]
                         if 'processCommand' in dir(mod):
-                            result = mod.processCommand(data['cmd']) 
+                            if 'params' in data:
+                                params = data['params']
+                            else:
+                                params = []
+                            result = mod.processCommand(data['cmd'], params) 
                         else:
                             result['return'] = 'error'
                             result['description'] = 'module does not support command execution'
