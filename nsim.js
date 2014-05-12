@@ -6,7 +6,7 @@ var realtimeId = null;
 function refreshStatus()
 {
     $.ajax({
-        url: "http://localhost:9999/soap",
+        url: remoteUrl,
         crossDomain: true,
         data: JSON.stringify({ cmd: "status" }),
         dataType: 'json',
@@ -25,7 +25,7 @@ function processStatus(json)
 function queryModules() 
 {
     $.ajax({
-        url: "http://localhost:9999/soap",
+        url: remoteUrl,
         crossDomain: true,
         data: JSON.stringify({ cmd: "modules" }),
         dataType: 'json',
@@ -106,7 +106,7 @@ function updateState()
 function queryInfoChannel(module, channel)
 {
     $.ajax({
-        url: "http://localhost:9999/soap",
+        url: remoteUrl,
         crossDomain: true,
         data: JSON.stringify({ module: module, channel: channel}),
         dataType: 'json',
@@ -193,7 +193,7 @@ function runCmd()
     }
          
     $.ajax({
-        url: "http://localhost:9999/soap",
+        url: remoteUrl,
         crossDomain: true,
         data: JSON.stringify({ module: cmdModule, cmd: cmd, params: cmdParams}),
         dataType: 'json',

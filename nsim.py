@@ -8,14 +8,22 @@ import BaseHTTPServer
 import os
 import imp
 import glob
+import logging
+import logging.handlers
+from optparse import OptionParser
 
-PORT_NUMBER = 9999 
-HOST_NAME = '127.0.0.1'
 VERSION = '1.0'
 
 mods = dict() 
+scriptPath = os.path.dirname(os.path.realpath(__file__))
+remoteUrl = 'localhost:9999'
 
-class TraffikaHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+class NSimRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+
+
+   # def log_message(format, ...):
+   #     logger.debug(format)
+   #     pass
 
     def processCmdStatus(self):
         result = {"return" : "ok", "version": VERSION, "status": "running"}
@@ -47,6 +55,8 @@ class TraffikaHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.do_GET()
 
     def do_GET(self):
+        logger.info('Http Request received %s', self.path)
+
         url = urlparse.urlparse(self.path)
         urlPathParts = url.path.split('/')
         if len(urlPathParts) != 2:
@@ -59,12 +69,20 @@ class TraffikaHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         if target in ['nsim.html', 'jquery-1.11.0.min.js', 'nsim.js']:
             # load index page
-            f = open(os.path.join(os.curdir, target))
+            f = open(os.path.join(os.curdir, os.path.join(scriptPath, target)))
             self.send_response(200)
             self.send_header('Content-Type','text/html')
             self.end_headers()
             self.wfile.write(f.read())
             f.close()
+            return
+
+        elif target == 'nsim-cfg.js':
+            body = 'var remoteUrl = \'%s\'' % remoteUrl;
+            self.send_response(200)
+            self.send_header('Content-Type','text/javascript')
+            self.end_headers()
+            self.wfile.write(body)
             return
 
         elif target == 'soap':
@@ -136,26 +154,51 @@ class TraffikaHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 self.send_error(404, 'file not found')
 
 def run():
+    global remoteUrl
+
+    # parse command line arguments
+    # process command line arguments
+    parser = OptionParser(usage="usage: %prog [options]")
+    parser.add_option("-l", "--listen", dest="listenIP", default="127.0.0.1", help="IP address to listen for http requests")
+    parser.add_option("-p", "--port", dest="listenPort", default="9999", help="port to listen for http requests")
+    (options, args) = parser.parse_args()
 
     # load dynamic modules
-    modules = glob.glob('module_*.py')
+    modules = glob.glob(scriptPath + '/module_*.py')
     for module in modules:
         moduleName, moduleExt = os.path.splitext(module)
+        moduleName = os.path.basename(moduleName)
         moduleObj =__import__(moduleName)
         if 'initialize' in dir(moduleObj):
             moduleObj.initialize()
             moduleName = moduleName.replace('module_', '');
             mods[moduleName] = moduleObj
 
-    server_address = (HOST_NAME, PORT_NUMBER)
-    httpd = BaseHTTPServer.HTTPServer(server_address, TraffikaHTTPRequestHandler)
-    print time.asctime(), "Server Starts - %s:%s" % (HOST_NAME, PORT_NUMBER)
+    serverAddress = (options.listenIP, int(options.listenPort))
+    remoteUrl = "http://%s:%s/soap" % (options.listenIP, options.listenPort)
+
+    httpd = BaseHTTPServer.HTTPServer(serverAddress, NSimRequestHandler)
+    print time.asctime(), "Server Started - %s" % str(serverAddress)
+    logger.info('Started')
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass
     httpd.server_close()
-    print time.asctime(), "Server Stops - %s:%s" % (HOST_NAME, PORT_NUMBER)
+    print time.asctime(), "Server Stopped - %s" % str(serverAddress)
+    logger.info('Stopped')
 
 if __name__ == '__main__':
+    # initialize logging
+    logger = logging.getLogger('nsim')
+    logger.setLevel(logging.DEBUG)
+    h = logging.handlers.RotatingFileHandler(filename='nsim.log', maxBytes=1024, mode='w')
+    #h = logging.StreamHandler()
+    h.setLevel(logging.DEBUG)
+    f = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s', '%d/%m/%Y %H:%M:%S')
+    h.setFormatter(f)
+    logger.addHandler(h)
+
+    logger.debug('Logging initialized')
+
     run()

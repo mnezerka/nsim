@@ -1,10 +1,13 @@
+# vim: set expandtab sw=4 ts=4 sts=4 foldmethod=indent:
 import os
 import datetime
+import logging
 
 sessions = []
 
 def initialize():
-	print "Dummpy module initialized"
+    logger = logging.getLogger('nsim.dummy')
+    logger.debug('Module initialized')
 
 def getCommands():
 	commands = []
@@ -25,10 +28,8 @@ def getInfoChannel(name):
 	if name == 'sysinfo':
 		lines.append('cwd: %s' % os.getcwd());
 		lines.append('pid: %d' % os.getpid());
-		lines.append('uid: %d' % os.getuid());
 		
 		times = os.times()
-		print times
 		lines.append('user time: %f' % times[0]);
 		lines.append('system time: %f' % times[1]);
 		result  = { "data" : lines }
