@@ -32,11 +32,6 @@ class NSimRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def processCmdModules(self):
         jsonModules = [] 
         for m in mods:
-            if 'getInfoChannels' in dir(mods[m]):
-                infoChannels = mods[m].getInfoChannels()
-            else:
-                infoChannels = []
-
             if 'getCommands' in dir(mods[m]):
                 commands = mods[m].getCommands()
             else:
@@ -44,7 +39,6 @@ class NSimRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
             jsonModules.append({
                 'name': m,
-                'infochannels': infoChannels,
                 'commands': commands})
 
         result = {"return" : "ok", "modules": jsonModules}
@@ -124,16 +118,6 @@ class NSimRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                             result['return'] = 'error'
                             result['description'] = 'unknown nsim command'
 
-                #process info channels
-                if 'channel' in data:
-                    if module in mods:
-                        mod = mods[module]
-                        if 'getInfoChannel' in dir(mod):
-                            result = mod.getInfoChannel(data['channel']);
-                            result['return'] = 'ok'
-                            result['module'] = module
-                            result['channel'] = data['channel'] 
-                
                 jsonResponse = json.dumps(result)
 
                 self.send_response(200)

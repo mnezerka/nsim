@@ -5,65 +5,57 @@
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <title>RSim Control Interface</title>
     <script type="text/javascript" src="jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="nsim-cfg.js"></script>
     <script type="text/javascript" src="nsim.js"></script>
     <style type="text/css">
-	  body { margin: 0px; padding: 0px; }
+	  body { margin: 0px; padding: 0px; color: #666; }
 	  table { border-collapse: collapse; margin-bottom: 5px; }
-	  h1 { font-size: 14pt; background-color: #999; margin-top: 0px; color: #fff; padding: 5px;}
-	  h2 { font-size: 10pt; background-color: #999; margin-top: 0px; color: #fff; padding: 1px;}
+	  h1 { font-size: 14pt; background-color: #666; margin-top: 0px; color: #fff; padding: 5px;}
+	  h2 { font-size: 12pt; margin-top: 20px; margin-bottom: 5px; color: #666; padding: 1px; }
 	  td, th, div { font-size: 10pt; }
-	  td, th { border: 1px solid gray; }
+	  td, th { border: none; }
 	  th { background-color: #d0d0d0; }
       div { margin: 5px;}
-	  span.info-channel { margin-right: 6px; background-color: #d0d0d0; }
-	  div.col { float: left;}
+	  div.col-info, div.col-console { }
+	  div.col-console { width: 100%; }
 	  div.line { margin: 0px; padding: 1px;  }
 	  div.channel-title { margin: 0px; padding: 1px; font-weight: bold; }
-	  div.info-channel { border: none;  }
 	  div.channel-title { border: 1px solid #666; background-color: #d0d0d0; width: 100%;  }
+	  textarea#console { width: 100%; border: 1px solid #aaa; height: auto; resize: none; line-height: 24px; overflow: hidden; }
+	  input { border: 1px solid #aaa; }
+	  .console-output-item { border-bottom: 1px solid #aaa; }
+      .console-output-cmd { white-space: pre; font-family: monospace; font-size: 8pt; }
+      .console-output-result { white-space: pre; font-family: monospace; font-size: 8pt; }
 	</style>
   </head>
 
 <body>
 	<h1>NSim Control Interface</h1>
 
-	<div class="col">
-		<h2>Basic information</h2>
+	<div class="col-info">
+		<h2>Information</h2>
+		<table>
+			<tr><td>Version:</td><td id="info-version"></td></tr>
+			<tr><td>Modules:</td><td id="info-modules"></td></tr>
+			<tr><td>Rpc url:</td><td><input type="text" id="rpc-url" /></td></tr>
+			<tr><td>Indent JSON output:</td><td><input type="checkbox" id="console-indent-output" checked="yes" /></td></tr>
+			<tr><td>Last update:</td><td id="info-last-update"></td></tr>
+		</table>
 
-		<div id="status">
-			<table>
-				<tr><th colspan="2">RSim Status</th></tr>
-				<tr><td>Version:</td><td id="status-version"></td></tr>
-				<tr><td>Status:</td><td id="status-status"></td></tr>
-				<tr><td>Last update:</td><td id="status-last-update"></td></tr>
-			</table>
-		</div>
-
-		<div>
-			<table id="modules">
-				<tbody>
-				<tr><th colspan="3">Modules</th></tr>
-				</tbody>
-			</table>
-		</div>
-
+		<!--
 		<div>
 			<button id="update">Update</button>
 			<button id="realtime">Realtime</button>
 		</div>
-
+		-->
 	</div>
 
-	<div class="col">
-		<h2>Info channels</h2>
-		<div id="info-channels"></div>
-	</div>
-
-	<div class="col">
-		<h2>Commands</h2>
-		<input id="cmd" type="text" />
-		<button id="runcmd">Run</button>
-		<div id="cmd-output" />
+	<div class="col-console">
+		<h2>Console</h2>
+		<form>
+			<textarea id="console" rows="1" autocorrect="off" spellcheck="false" autofocus="" ></textarea>
+		</form>
+		<div id="console-output"></div>
 	</div>
 
 </body>
