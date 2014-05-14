@@ -16,30 +16,6 @@ def getCommands():
 	commands.append({'name': 'session-close', 'description': ''})
 	return commands;
 
-def getInfoChannels():
-	channels = []
-	channels.append({'name': 'sysinfo', 'description': 'System information'})
-	channels.append({'name': 'sessions', 'description': 'Dumy sessions status'})
-	return channels;
-
-def getInfoChannel(name):
-	lines = []
-
-	if name == 'sysinfo':
-		lines.append('cwd: %s' % os.getcwd());
-		lines.append('pid: %d' % os.getpid());
-		
-		times = os.times()
-		lines.append('user time: %f' % times[0]);
-		lines.append('system time: %f' % times[1]);
-		result  = { "data" : lines }
-
-	elif name == 'sessions':
-		lines.append('sessions: %d' % len(sessions));
-		result  = { "data" : lines }
-
-	return result
-
 def processCommand(cmd, params):
 	if cmd == 'sum':
 		result = { "return": "ok", "result": 23333 }
