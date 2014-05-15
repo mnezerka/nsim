@@ -1,7 +1,5 @@
 // vim: set expandtab sw=4 ts=4 sts=4 foldmethod=indent:
 
-var realtime = false;
-var realtimeId = null;
 var lastCmd = null;
 
 function getRemoteUrl()
@@ -10,11 +8,15 @@ function getRemoteUrl()
     if (formVal.length > 0)
         return formVal; 
 
-    return remoteUrl;
+    return document.URL;
 }
 
-function refreshStatus()
+function updateInfo()
 {
+    var now = new Date();
+    var nowStr = now.toLocaleTimeString();
+    $('#info-last-update').html(nowStr);
+
     $.ajax({
         url: getRemoteUrl(),
         crossDomain: true,
@@ -32,7 +34,6 @@ function refreshStatus()
         type: 'POST',
         success: processModules
     });
-
 }
 
 function processStatus(json)
@@ -41,42 +42,10 @@ function processStatus(json)
 }
 
 function processModules(json) {
-    console.log("processModules called");
     modules = ""
     for (var i = 0; i < json.modules.length; i++)
-    {
         modules += json.modules[i].name + '&nbsp;';
-    }
     $('#info-modules').html(modules);
-
-}
-
-function updateInfo()
-{
-    console.log('Updating state');
-    var now = new Date();
-    refreshStatus();
-    var nowStr = now.toLocaleTimeString();
-    $('#info-last-update').html(nowStr);
-    $('#rpc-url').val(getRemoteUrl());
-}
-
-function setRealtime()
-{
-    if (!realtime)
-    {
-        console.log("enabling realtime");
-        realtimeId = setInterval(updateState, 5000);
-        $('#realtime').text("Disable Realtime");
-        realtime = true;
-    }
-    else
-    {
-        console.log("disabling realtime");
-        clearInterval(realtimeId);
-        $('#realtime').text("Enable Realtime");
-        realtime = false;
-    }
 }
 
 function sendCmd()
@@ -90,31 +59,55 @@ function sendCmd()
     var cmdPart = cmdParams[0]
     cmdParams.shift();
     var cmdParts = cmdPart.split(":");
+    request = {};
     if (cmdParts.length == 1)
     {
-        cmdModule = "nsim";
-        cmd = cmdParts[0];
+        request['cmd'] = cmdParts[0];
     }
     else
     {
-        cmdModule = cmdParts[0];
-        cmd = cmdParts[1];
+        request['module'] = cmdParts[0];
+        request['cmd'] = cmdParts[1];
     }
-         
+
+    for (var i = 0; i < cmdParams.length; i++)
+    {
+        t = cmdParams[i].split("="); 
+        if (t.length == 2)
+            if (typeof(t[0]) == 'string')
+            {
+                key = t[0];
+                val = t[1];
+                valRaw = val.match(/^["']([^"']*)["']$/);
+                // check if value should be interpreted as string or number
+                if (val.length > 1 && valRaw != null)
+                {
+                    val = valRaw[1];
+                }
+                else
+                {
+                    // try to convert string to int, if not successfull, leave value as string
+                    val = parseInt(t[1]);
+                    if (val == NaN)
+                        val = t[1]
+                }
+                request[key] = val;
+            }
+    }
+    
     $.ajax({
         url: getRemoteUrl(),
         crossDomain: true,
-        data: JSON.stringify({ module: cmdModule, cmd: cmd, params: cmdParams}),
+        data: JSON.stringify(request),
         dataType: 'json',
         type: 'POST',
-        success: processCmd
+        success: processCmd,
+        error: processCmdError
     });
 }
 
 function processCmd(json)
 {
-    console.log("processing command");
-
     output = "<div class=\"console-output-item\">";
     output += "  <div class=\"console-output-cmd\">&gt;&nbsp;" + lastCmd + "</div>";
     output += "  <div class=\"console-output-result\">";
@@ -128,9 +121,22 @@ function processCmd(json)
     $('#console-output').prepend(output);
 }
 
+function processCmdError(jqXHR, textStatus, errorThrown)
+{
+    output = "<div class=\"console-output-item\">";
+    output += "  <div class=\"console-output-cmd\">&gt;&nbsp;" + lastCmd + "</div>";
+    output += '<div style="color: red;">Http error occured: ' + textStatus + ' ' + errorThrown + '</div>';
+
+    output += "</div>";
+    $('#console-output').prepend(output);
+}
+
+
 $(document).ready(function() {
+
+    $('#rpc-url').val(document.URL + "soap");
+
     updateInfo();
-    getRemoteUrl();
 
     $('#console').keydown(function(e)
     {
