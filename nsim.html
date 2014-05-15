@@ -5,25 +5,24 @@
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <title>RSim Control Interface</title>
     <script type="text/javascript" src="jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="nsim-cfg.js"></script>
     <script type="text/javascript" src="nsim.js"></script>
     <style type="text/css">
-	  body { margin: 0px; padding: 0px; color: #666; }
-	  table { border-collapse: collapse; margin-bottom: 5px; }
-	  h1 { font-size: 14pt; background-color: #666; margin-top: 0px; color: #fff; padding: 5px;}
-	  h2 { font-size: 12pt; margin-top: 20px; margin-bottom: 5px; color: #666; padding: 1px; }
-	  td, th, div { font-size: 10pt; }
+	  body { background-color: #333; margin: 0px; padding: 0px; color: #ccc; }
+	  table { border-collapse: collapse; margin-bottom: 5px; width: 100%; }
+	  h1 { font-size: 14pt; background-color: #444; margin-top: 0px; color: #ccc; padding: 5px; border-bottom: 1px solid #555;}
+	  h2 { font-size: 12pt; margin-top: 20px; margin-bottom: 5px; color: #ccc; padding: 1px; }
+	  td, th, div { font-size: 10pt; color: #eee; }
 	  td, th { border: none; }
-	  th { background-color: #d0d0d0; }
+      td.label { width: 5%; text-align: right; }
+      td.value { width: 95%; text-align: left; padding-left: 10px; }
+      td.value input { float: left; background-color: #444; }
+      td.text input { width: 500px; border: 1px solid #555; color: #ccc; }
+      td.cb input { width: 10px; }
       div { margin: 5px;}
-	  div.col-info, div.col-console { }
-	  div.col-console { width: 100%; }
-	  div.line { margin: 0px; padding: 1px;  }
-	  div.channel-title { margin: 0px; padding: 1px; font-weight: bold; }
-	  div.channel-title { border: 1px solid #666; background-color: #d0d0d0; width: 100%;  }
-	  textarea#console { width: 100%; border: 1px solid #aaa; height: auto; resize: none; line-height: 24px; overflow: hidden; }
-	  input { border: 1px solid #aaa; }
-	  .console-output-item { border-bottom: 1px solid #aaa; }
+	  div.col-info, div.col-console { width: 100%; }
+	  div.col-console { width: 90%; }
+	  textarea#console { width: 90%; border: 1px solid #555; background-color: #444; color: #ccc; height: auto; resize: none; line-height: 24px; overflow: hidden; }
+	  .console-output-item { border-bottom: 1px solid #666; }
       .console-output-cmd { white-space: pre; font-family: monospace; font-size: 8pt; }
       .console-output-result { white-space: pre; font-family: monospace; font-size: 8pt; }
 	</style>
@@ -35,11 +34,11 @@
 	<div class="col-info">
 		<h2>Information</h2>
 		<table>
-			<tr><td>Version:</td><td id="info-version"></td></tr>
-			<tr><td>Modules:</td><td id="info-modules"></td></tr>
-			<tr><td>Rpc url:</td><td><input type="text" id="rpc-url" /></td></tr>
-			<tr><td>Indent JSON output:</td><td><input type="checkbox" id="console-indent-output" checked="yes" /></td></tr>
-			<tr><td>Last update:</td><td id="info-last-update"></td></tr>
+			<tr><td class="label">Version:</td><td class="value" id="info-version"></td></tr>
+			<tr><td class="label">Modules:</td><td class="value" id="info-modules"></td></tr>
+			<tr><td class="label">Rpc url:</td><td class="value text"><input type="text" id="rpc-url" /></td></tr>
+			<tr><td class="label">Indent JSON output:</td><td class="value cb"><input type="checkbox" id="console-indent-output" checked="yes" /></td></tr>
+			<tr><td class="label">Last update:</td><td class="value" id="info-last-update"></td></tr>
 		</table>
 
 		<!--

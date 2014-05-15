@@ -1,40 +1,35 @@
 # vim: set expandtab sw=4 ts=4 sts=4 foldmethod=indent:
-import os
-import datetime
 import logging
 
-sessions = []
-
-def initialize():
+def initialize(nsim):
     logger = logging.getLogger('nsim.dummy')
     logger.debug('Module initialized')
 
 def getCommands():
-	commands = []
-	commands.append({'name': 'sum', 'description': 'sum(int, int)'})
-	commands.append({'name': 'session-open', 'description': ''})
-	commands.append({'name': 'session-close', 'description': ''})
-	return commands;
+    commands = []
+    commands.append({'name': 'sum', 'description': 'sum p1=int p2=int'})
+    return commands;
 
-def processCommand(cmd, params):
-	if cmd == 'sum':
-		result = { "return": "ok", "result": 23333 }
+def processRequest(data):
+    if 'cmd' in data:
+        if data['cmd'] == 'sum':
+            if 'p1' in data and 'p2' in data:
+                try:
+                    p1 = int(data['p1'])
+                except:
+                    p1 = 0   
+                try:
+                    p2 = int(data['p2'])
+                except:
+                    p2 = 0   
+                result = { "return": "ok"}
+                result['result'] = p1 + p2 
+            else:
+                result = { "return": "error", "description": "Incorrect set of arguments" }
+        else:
+            result = { "return": "error", "description": 'Unknown command'}
+    else:
+        result = { 'return': 'error', 'description': 'Unknown request type'}
 
-	elif cmd == 'session-open':
-		if len(params) > 0:
-			sessionId = params[0]
-			if sessionId in sessions:
-				result = { "return": "error", 'description': 'Session (%s) is already open' % sessionId }
-			else:
-				sessions.append(sessionId)
-				result = { "return": "ok" }
-		else:
-			result = { "return": "error", 'description': 'Missing session id' }
 
-	elif cmd == 'session-close':
-		result = { "return": "ok" }
-
-	else:
-		result = { "return": "error", "description": 'Unknown command'}
-
-	return result;
+    return result;
